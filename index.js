@@ -15,6 +15,10 @@ app.use(cors());
 
 app.use('/posts', postRoutes);
 
+app.get('/', (req, res) => {
+  res.json({ message: 'Hello, this is api post memory😍' });
+});
+
 mongoose
   .connect(process.env.CONNECTION_URL)
   .then(() => {
