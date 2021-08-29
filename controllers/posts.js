@@ -14,7 +14,11 @@ exports.getPosts = async (req, res) => {
 exports.createPost = async (req, res) => {
   try {
     const data = req.body;
-    const newPost = await Post.create(data);
+    const newPost = await Post.create({
+      ...data,
+      creator: req.userId,
+      createdAt: new Date().toISOString(),
+    });
 
     res.status(201).json(newPost);
   } catch (err) {
@@ -74,14 +78,12 @@ exports.likePost = async (req, res) => {
     const post = await Post.findById(id);
     const index = post.likes.findIndex(id => id === String(req.userId));
 
-    console.log('index like', index);
-
     if (index === -1) {
       // like the post
-      push.likes.push(req.userId);
+      post.likes.push(req.userId);
     } else {
       // dislike the post
-      push.likes.filter(id => id !== String(req.userId));
+      post.likes = post.likes.filter(id => id !== String(req.userId));
     }
 
     const updatedPost = await Post.findByIdAndUpdate(id, post, { new: true });

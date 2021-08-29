@@ -2,9 +2,10 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const postSchema = new Schema({
-  creator: '',
   title: String,
   message: String,
+  name: String,
+  creator: String,
   tags: [String],
   selectedFile: String,
   likes: {
