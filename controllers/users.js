@@ -1,14 +1,13 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-
-const secretKey = 'secret';
+const secret = require('../secret');
 
 exports.signin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = User.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ message: 'User doesn`t exist' });
@@ -20,7 +19,7 @@ exports.signin = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    const token = jwt.sign({ email: user.email, id: user._id }, secretKey, {
+    const token = jwt.sign({ email: user.email, id: user._id }, secret, {
       expiresIn: '1h',
     });
 
@@ -35,7 +34,7 @@ exports.signup = async (req, res) => {
   const { email, password, confirmPassword, firstName, lastName } = req.body;
 
   try {
-    const user = User.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (user) {
       return res.status(404).json({ message: 'User already exist' });
@@ -45,8 +44,6 @@ exports.signup = async (req, res) => {
       return res.status(404).json({ message: 'Password Don`t Match' });
     }
 
-    const salt = await bcrypt.genSalt();
-    console.log('salt', salt);
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const result = await User.create({
@@ -55,7 +52,7 @@ exports.signup = async (req, res) => {
       name: `${firstName} ${lastName}`,
     });
 
-    const token = jwt.sign({ email: user.email, id: user._id }, secretKey, {
+    const token = jwt.sign({ email: result.email, id: result._id }, secret, {
       expiresIn: '1h',
     });
 
