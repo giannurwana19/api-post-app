@@ -11,6 +11,23 @@ exports.getPosts = async (req, res) => {
   }
 };
 
+exports.getPostsBySearch = async (req, res) => {
+  const { searchQuery, tags } = req.query;
+
+  try {
+    const title = new RegExp(searchQuery, 'i');
+
+    const posts = await Post.find({
+      $or: [{ title }, { tags: { $in: tags.split(',') } }],
+    });
+
+    res.status(200).json({ data: posts });
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+    console.log(err);
+  }
+};
+
 exports.createPost = async (req, res) => {
   try {
     const data = req.body;
@@ -93,3 +110,9 @@ exports.likePost = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+// DOCS
+// const title = new RegExp(searchQuery, 'i');
+// i berarti ingnore
+// artinya membolehkan semua query
+// contoh test, Test, TEST semuanya sama
