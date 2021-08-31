@@ -135,6 +135,24 @@ exports.likePost = async (req, res) => {
   }
 };
 
+exports.commentPost = async (req, res) => {
+  const { id } = req.params;
+  const { value } = req.body;
+
+  console.log('body value', value);
+
+  try {
+    const post = await Post.findById(id);
+
+    const updatedPost = await Post.findByIdAndUpdate(id, post, { new: true });
+
+    res.status(200).json(updatedPost);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // DOCS
 // const title = new RegExp(searchQuery, 'i');
 // i berarti ingnore
