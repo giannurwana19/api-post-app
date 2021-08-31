@@ -4,7 +4,7 @@ const Post = require('../models/Post');
 exports.getPosts = async (req, res) => {
   const { page } = req.query;
   try {
-    const LIMIT = 8; // post per page
+    const LIMIT = 3; // post per page
     const startIndex = (Number(page) - 1) * LIMIT; // get start index of every page
     const total = await Post.countDocuments({});
 
@@ -18,6 +18,18 @@ exports.getPosts = async (req, res) => {
       currentPage: Number(page),
       numberOfPages: Math.ceil(total / LIMIT),
     });
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
+exports.getPost = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const post = await Post.findById(id);
+
+    res.status(200).json(post);
   } catch (err) {
     res.status(404).json({ message: err.message });
   }
